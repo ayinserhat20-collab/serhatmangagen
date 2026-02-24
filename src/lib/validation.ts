@@ -1,0 +1,34 @@
+import { z } from "zod";
+
+export const customerSchema = z.object({
+  fullName: z.string().min(3, "Ad Soyad en az 3 karakter olmalıdır"),
+  phone: z.string().regex(/^(05)[0-9]{9}$/, "Geçerli bir TR telefon numarası giriniz (05xx...)"),
+  email: z.string().email("Geçerli bir e-posta adresi giriniz"),
+  address: z.string().min(10, "Lütfen tam teslimat adresinizi giriniz"),
+});
+
+export const storySchema = z.object({
+  longText: z.string().min(50, "Hikaye metni en az 50 karakter olmalıdır"),
+  highlights: z.array(z.string()).min(1, "En az bir önemli olay ekleyiniz"),
+  periods: z.array(z.string()).min(1, "En az bir zaman dilimi seçiniz"),
+  locations: z.array(z.string()).min(1, "En az bir mekan ekleyiniz"),
+  isFiction: z.boolean(),
+  themes: z.array(z.string()).min(1, "En az bir tema seçiniz"),
+});
+
+export const characterSchema = z.object({
+  name: z.string().min(2, "İsim zorunludur"),
+  gender: z.string().min(1, "Cinsiyet seçiniz"),
+  age: z.string().min(1, "Yaş giriniz"),
+  physical: z.string().min(5, "Fiziksel özellikler zorunludur"),
+  personality: z.string().min(5, "Kişilik özellikleri zorunludur"),
+  hair: z.string().min(2, "Saç rengi zorunludur"),
+  eyes: z.string().min(2, "Göz rengi zorunludur"),
+  photos: z.any().optional(),
+});
+
+export const orderSchema = z.object({
+  customer: customerSchema,
+  story: storySchema,
+  characters: z.array(characterSchema).min(1, "En az bir karakter eklemelisiniz"),
+});
