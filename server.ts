@@ -1,15 +1,16 @@
 import express from "express";
 import { createServer as createViteServer } from "vite";
-import { OrderRepository } from "./src/lib/store";
+import { OrderRepository, connectDB } from "./src/lib/store";
 import dotenv from "dotenv";
 import multer from "multer";
-import fs from "fs";
 
 dotenv.config();
 
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ storage: multer.memoryStorage() });
 
 async function startServer() {
+  await connectDB(process.env.MONGODB_URI || "");
+
   const app = express();
   const PORT = 3000;
 
@@ -20,19 +21,18 @@ async function startServer() {
     try {
       const orderData = JSON.parse(req.body.orderData);
 
-      const photo_paths: string[] = [];
       const uploadedFiles = req.files as Express.Multer.File[];
-      if (uploadedFiles && uploadedFiles.length > 0) {
-        uploadedFiles.forEach(f => photo_paths.push(f.path));
-      }
 
-      orderData.photo_paths = photo_paths;
-      const order = OrderRepository.create(orderData);
+      // Store just a textual indicator that photos were provided
+      orderData.photo_paths = uploadedFiles && uploadedFiles.length > 0 ? ['(Bellekte İşlendi)'] : [];
+
+      const order = await OrderRepository.create(orderData);
 
       // Telegram Notification
       const botToken = process.env.TELEGRAM_BOT_TOKEN;
       const chatId = process.env.TELEGRAM_CHAT_ID;
       const shopierUrl = process.env.SHOPIER_PAYMENT_URL || "Belirtilmedi";
+
 
       if (botToken && chatId) {
         let storyText = order.story.longText || "(boş)";
@@ -55,7 +55,7 @@ async function startServer() {
 💳 Ödeme Linki: ${shopierUrl}
 
 📝 Hikaye: ${storyText}
-📸 Fotoğraflar: ${photo_paths.length > 0 ? photo_paths.length + " dosya" : "(yok)"}
+📸 Fotoğraflar: ${uploadedFiles && uploadedFiles.length > 0 ? uploadedFiles.length + " dosya" : "(yok)"}
         `;
 
         await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
@@ -83,8 +83,7 @@ async function startServer() {
         if (uploadedFiles && uploadedFiles.length > 0) {
           for (const file of uploadedFiles) {
             try {
-              const fileBuffer = fs.readFileSync(file.path);
-              const blob = new Blob([fileBuffer]);
+              const blob = new Blob([new Uint8Array(file.buffer)]);
               const fd = new FormData();
               fd.append('chat_id', chatId);
               fd.append('document', blob as any, file.originalname);
@@ -107,8 +106,8 @@ async function startServer() {
     }
   });
 
-  app.get("/api/orders/:id", (req, res) => {
-    const order = OrderRepository.getById(req.params.id);
+  app.get("/api/orders/:id", async (req, res) => {
+    const order = await OrderRepository.getById(req.params.id);
     if (!order) return res.status(404).json({ error: "Sipariş bulunamadı" });
     res.json(order);
   });
@@ -123,17 +122,17 @@ async function startServer() {
     }
   };
 
-  app.get("/api/admin/orders", adminAuth, (req, res) => {
-    res.json(OrderRepository.getAll());
+  app.get("/api/admin/orders", adminAuth, async (req, res) => {
+    res.json(await OrderRepository.getAll());
   });
 
-  app.patch("/api/admin/orders/:id", adminAuth, (req, res) => {
-    const order = OrderRepository.update(req.params.id, req.body);
+  app.patch("/api/admin/orders/:id", adminAuth, async (req, res) => {
+    const order = await OrderRepository.update(req.params.id, req.body);
     if (!order) return res.status(404).json({ error: "Sipariş bulunamadı" });
     res.json(order);
   });
 
-  app.get("/api/admin/mark-paid", (req, res) => {
+  app.get("/api/admin/mark-paid", async (req, res) => {
     const password = req.query.password;
     const id = req.query.id as string;
 
@@ -141,7 +140,7 @@ async function startServer() {
       return res.status(401).json({ error: "Yetkisiz erişim" });
     }
 
-    const order = OrderRepository.update(id, { paymentStatus: 'paid' });
+    const order = await OrderRepository.update(id, { paymentStatus: 'paid' });
     if (!order) return res.status(404).json({ error: "Sipariş bulunamadı" });
 
     // Telegram Notification

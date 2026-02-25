@@ -1,54 +1,82 @@
-import Database from 'better-sqlite3';
+import mongoose, { Schema, Document } from 'mongoose';
 import { Order } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
-const db = new Database('manga_orders.db');
+export const connectDB = async (uri: string) => {
+  try {
+    await mongoose.connect(uri);
+    console.log('MongoDB connected successfully');
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+  }
+};
 
-// Initialize database
-db.exec(`
-  CREATE TABLE IF NOT EXISTS orders (
-    id TEXT PRIMARY KEY,
-    createdAt TEXT,
-    data TEXT
-  )
-`);
+const OrderSchema = new Schema({
+  id: { type: String, required: true, unique: true },
+  createdAt: { type: String, required: true },
+  customer: {
+    fullName: String,
+    phone: String,
+    email: String,
+    address: String,
+  },
+  story: {
+    longText: String,
+    highlights: [String],
+    periods: [String],
+    locations: [String],
+    isFiction: Boolean,
+    themes: [String],
+  },
+  characters: [{
+    id: String,
+    name: String,
+    gender: String,
+    age: String,
+    physical: String,
+    personality: String,
+    hair: String,
+    eyes: String,
+    photos: [String],
+  }],
+  status: { type: String, default: 'received' },
+  paymentStatus: { type: String, default: 'unpaid' },
+  adminNote: String,
+  photo_paths: [String],
+});
+
+const OrderModel = mongoose.models.Order || mongoose.model<Order & Document>('Order', OrderSchema);
 
 export const OrderRepository = {
-  create(orderData: Omit<Order, 'id' | 'createdAt' | 'status' | 'paymentStatus'>): Order {
-    const order: Order = {
+  async create(orderData: Omit<Order, 'id' | 'createdAt' | 'status' | 'paymentStatus'>): Promise<Order> {
+    const order = new OrderModel({
       ...orderData,
       id: uuidv4(),
       createdAt: new Date().toISOString(),
       status: 'received',
       paymentStatus: 'unpaid',
-    };
+    });
 
-    const stmt = db.prepare('INSERT INTO orders (id, createdAt, data) VALUES (?, ?, ?)');
-    stmt.run(order.id, order.createdAt, JSON.stringify(order));
-    
-    return order;
+    await order.save();
+    return order.toObject() as Order;
   },
 
-  getById(id: string): Order | null {
-    const stmt = db.prepare('SELECT data FROM orders WHERE id = ?');
-    const row = stmt.get(id) as { data: string } | undefined;
-    return row ? JSON.parse(row.data) : null;
+  async getById(id: string): Promise<Order | null> {
+    const order = await OrderModel.findOne({ id }).lean();
+    return order as Order | null;
   },
 
-  getAll(): Order[] {
-    const stmt = db.prepare('SELECT data FROM orders ORDER BY createdAt DESC');
-    const rows = stmt.all() as { data: string }[];
-    return rows.map(row => JSON.parse(row.data));
+  async getAll(): Promise<Order[]> {
+    const orders = await OrderModel.find().sort({ createdAt: -1 }).lean();
+    return orders as Order[];
   },
 
-  update(id: string, updates: Partial<Order>): Order | null {
-    const existing = this.getById(id);
-    if (!existing) return null;
-
-    const updated = { ...existing, ...updates };
-    const stmt = db.prepare('UPDATE orders SET data = ? WHERE id = ?');
-    stmt.run(JSON.stringify(updated), id);
-    
-    return updated;
+  async update(id: string, updates: Partial<Order>): Promise<Order | null> {
+    const order = await OrderModel.findOneAndUpdate(
+      { id },
+      { $set: updates },
+      { new: true }
+    ).lean();
+    return order as Order | null;
   }
 };

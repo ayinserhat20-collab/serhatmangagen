@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: mangagen-api
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_CHAT_ID
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: SHOPIER_PAYMENT_URL
+        sync: false
