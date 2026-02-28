@@ -7,7 +7,7 @@ import { orderSchema } from "../lib/validation";
 import { Plus, Trash2, ArrowRight, ArrowLeft, Upload, Check } from "lucide-react";
 import { cn } from "../lib/utils";
 
-const STEPS = ["Kişisel Bilgiler", "Hikaye Detayları", "Karakterler", "Özet"];
+const getSteps = (type: string) => type === 'children' ? ["Kişisel Bilgiler", "Hikaye Detayları", "Özet"] : ["Kişisel Bilgiler", "Hikaye Detayları", "Karakterler", "Özet"];
 
 export default function OrderWizard() {
   const [step, setStep] = useState(0);
@@ -31,11 +31,13 @@ export default function OrderWizard() {
   const { fields: locationFields, append: appendLocation, remove: removeLocation } = useFieldArray({ control, name: "story.locations" as any });
   const { fields: characterFields, append: appendCharacter, remove: removeCharacter } = useFieldArray({ control, name: "characters" as any });
 
+  const STEPS = getSteps(packageType);
+
   const nextStep = async () => {
     let fieldsToValidate: any[] = [];
     if (step === 0) fieldsToValidate = ["customer"];
-    if (step === 1) fieldsToValidate = ["story"];
-    if (step === 2) fieldsToValidate = ["characters"];
+    if (step === 1) fieldsToValidate = ["story", ...(packageType === 'children' ? ["characters"] : [])];
+    if (step === 2 && packageType !== 'children') fieldsToValidate = ["characters"];
 
     const isValid = await trigger(fieldsToValidate);
     if (isValid) setStep(s => s + 1);
@@ -143,11 +145,28 @@ export default function OrderWizard() {
               exit={{ opacity: 0, y: -10 }}
               className="space-y-8"
             >
-              <h2 className="text-2xl font-bold mb-8">Hikayeni Yaz</h2>
+              <h2 className="text-2xl font-bold mb-8">
+                {packageType === 'children' ? 'Çocuğunuzun Hikayesi' : 'Hikayeni Yaz'}
+              </h2>
+
+              {packageType === 'children' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100">
+                  <div>
+                    <label className="block text-sm font-semibold mb-2">Çocuğunuzun Adı</label>
+                    <input {...register("characters.0.name")} className="w-full p-4 bg-white border border-slate-200 rounded-xl focus:ring-2 ring-slate-900/5 outline-none" placeholder="Örn: Ali" />
+                    {errors.characters?.[0]?.name && <p className="text-red-500 text-xs mt-1">{(errors.characters[0] as any).name?.message}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2">Yaşı</label>
+                    <input {...register("characters.0.age")} className="w-full p-4 bg-white border border-slate-200 rounded-xl focus:ring-2 ring-slate-900/5 outline-none" placeholder="Örn: 5" />
+                    {errors.characters?.[0]?.age && <p className="text-red-500 text-xs mt-1">{(errors.characters[0] as any).age?.message}</p>}
+                  </div>
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-semibold mb-2">Hikaye Metni (Detaylı)</label>
-                <textarea {...register("story.longText")} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 ring-slate-900/5 outline-none h-48" placeholder="Hayat hikayeni, anılarını veya mangaya dönüştürmek istediğin olayları yaz..." />
+                <textarea {...register("story.longText")} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 ring-slate-900/5 outline-none h-48" placeholder={packageType === 'children' ? "Çocuğunuzun ilgi alanları, sevdiği hayvanlar veya oyuncaklar hakkında bilgi vererek tasarlanacak hikayenin konusunu buraya yazın..." : "Hayat hikayeni, anılarını veya mangaya dönüştürmek istediğin olayları yaz..."} />
                 {errors.story?.longText && <p className="text-red-500 text-xs mt-1">{errors.story.longText.message}</p>}
               </div>
 
@@ -208,53 +227,59 @@ export default function OrderWizard() {
                   </div>
                   {errors.story?.themes && <p className="text-red-500 text-xs mt-1">{errors.story.themes.message}</p>}
                 </div>
-
-                <div>
-                  <label className="block text-sm font-semibold mb-4">Zaman Dilimleri</label>
-                  <div className="flex flex-wrap gap-2">
-                    {["Çocukluk", "Lise", "Üniversite", "İş Hayatı", "Gelecek"].map(period => (
-                      <label key={period} className="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-full cursor-pointer hover:bg-slate-100 transition-colors has-[:checked]:bg-slate-900 has-[:checked]:text-white">
-                        <input type="checkbox" value={period} {...register("story.periods")} className="hidden" />
-                        <span className="text-sm font-medium">{period}</span>
-                      </label>
-                    ))}
-                  </div>
-                  {errors.story?.periods && <p className="text-red-500 text-xs mt-1">{errors.story.periods.message}</p>}
-                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold mb-4">Önemli Olaylar</label>
-                <div className="space-y-3">
-                  {highlightFields.map((field, index) => (
-                    <div key={field.id} className="flex gap-2">
-                      <input {...register(`story.highlights.${index}` as any)} className="flex-grow p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none" placeholder="Örn: İlk tanışma anı..." />
-                      <button type="button" onClick={() => removeHighlight(index)} className="p-4 text-red-500 hover:bg-red-50 rounded-xl transition-colors"><Trash2 size={20} /></button>
+              {packageType !== 'children' && (
+                <>
+                  <div className="pt-6 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                      <label className="block text-sm font-semibold mb-4">Zaman Dilimleri</label>
+                      <div className="flex flex-wrap gap-2">
+                        {["Çocukluk", "Lise", "Üniversite", "İş Hayatı", "Gelecek"].map(period => (
+                          <label key={period} className="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-full cursor-pointer hover:bg-slate-100 transition-colors has-[:checked]:bg-slate-900 has-[:checked]:text-white">
+                            <input type="checkbox" value={period} {...register("story.periods")} className="hidden" />
+                            <span className="text-sm font-medium">{period}</span>
+                          </label>
+                        ))}
+                      </div>
+                      {errors.story?.periods && <p className="text-red-500 text-xs mt-1">{errors.story.periods.message}</p>}
                     </div>
-                  ))}
-                  <button type="button" onClick={() => appendHighlight("")} className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors"><Plus size={16} /> Olay Ekle</button>
-                </div>
-              </div>
+                  </div>
 
-              <div>
-                <label className="block text-sm font-semibold mb-4">Tür</label>
-                <div className="flex gap-4">
-                  <label className="flex-1 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors has-[:checked]:border-slate-900 has-[:checked]:bg-slate-900/5">
-                    <input type="radio" value="false" {...register("story.isFiction", { setValueAs: v => v === "true" })} className="hidden" defaultChecked />
-                    <span className="font-bold block">Gerçek Hikaye</span>
-                    <span className="text-xs text-slate-500">Yaşanmış olaylara dayanır.</span>
-                  </label>
-                  <label className="flex-1 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors has-[:checked]:border-slate-900 has-[:checked]:bg-slate-900/5">
-                    <input type="radio" value="true" {...register("story.isFiction", { setValueAs: v => v === "true" })} className="hidden" />
-                    <span className="font-bold block">Kurgu</span>
-                    <span className="text-xs text-slate-500">Hayal gücüne dayalıdır.</span>
-                  </label>
-                </div>
-              </div>
+                  <div className="pt-6 border-t border-slate-100">
+                    <label className="block text-sm font-semibold mb-4">Önemli Olaylar</label>
+                    <div className="space-y-3">
+                      {highlightFields.map((field, index) => (
+                        <div key={field.id} className="flex gap-2">
+                          <input {...register(`story.highlights.${index}` as any)} className="flex-grow p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none" placeholder="Örn: İlk tanışma anı..." />
+                          <button type="button" onClick={() => removeHighlight(index)} className="p-4 text-red-500 hover:bg-red-50 rounded-xl transition-colors"><Trash2 size={20} /></button>
+                        </div>
+                      ))}
+                      <button type="button" onClick={() => appendHighlight("")} className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors"><Plus size={16} /> Olay Ekle</button>
+                    </div>
+                  </div>
+
+                  <div className="pt-6 border-t border-slate-100">
+                    <label className="block text-sm font-semibold mb-4">Tür</label>
+                    <div className="flex gap-4">
+                      <label className="flex-1 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors has-[:checked]:border-slate-900 has-[:checked]:bg-slate-900/5">
+                        <input type="radio" value="false" {...register("story.isFiction", { setValueAs: v => v === "true" })} className="hidden" defaultChecked />
+                        <span className="font-bold block">Gerçek Hikaye</span>
+                        <span className="text-xs text-slate-500">Yaşanmış olaylara dayanır.</span>
+                      </label>
+                      <label className="flex-1 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors has-[:checked]:border-slate-900 has-[:checked]:bg-slate-900/5">
+                        <input type="radio" value="true" {...register("story.isFiction", { setValueAs: v => v === "true" })} className="hidden" />
+                        <span className="font-bold block">Kurgu</span>
+                        <span className="text-xs text-slate-500">Hayal gücüne dayalıdır.</span>
+                      </label>
+                    </div>
+                  </div>
+                </>
+              )}
             </motion.div>
           )}
 
-          {step === 2 && (
+          {step === 2 && packageType !== 'children' && (
             <motion.div
               key="step2"
               initial={{ opacity: 0, y: 10 }}
@@ -343,9 +368,9 @@ export default function OrderWizard() {
             </motion.div>
           )}
 
-          {step === 3 && (
+          {(step === 3 || (packageType === 'children' && step === 2)) && (
             <motion.div
-              key="step3"
+              key="stepSummary"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}

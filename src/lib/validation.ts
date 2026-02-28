@@ -13,21 +13,21 @@ export const storySchema = z.object({
   musicPreference: z.string().optional(),
   customMusicPreference: z.string().optional(),
   specialBox: z.boolean().optional(),
-  highlights: z.array(z.string()).min(1, "En az bir önemli olay ekleyiniz"),
-  periods: z.array(z.string()).min(1, "En az bir zaman dilimi seçiniz"),
-  locations: z.array(z.string()).min(1, "En az bir mekan ekleyiniz"),
-  isFiction: z.boolean(),
+  highlights: z.array(z.string()).optional(),
+  periods: z.array(z.string()).optional(),
+  locations: z.array(z.string()).optional(),
+  isFiction: z.boolean().optional(),
   themes: z.array(z.string()).min(1, "En az bir tema seçiniz"),
 });
 
 export const characterSchema = z.object({
   name: z.string().min(2, "İsim zorunludur"),
-  gender: z.string().min(1, "Cinsiyet seçiniz"),
+  gender: z.string().optional(),
   age: z.string().min(1, "Yaş giriniz"),
-  physical: z.string().min(5, "Fiziksel özellikler zorunludur"),
-  personality: z.string().min(5, "Kişilik özellikleri zorunludur"),
-  hair: z.string().min(2, "Saç rengi zorunludur"),
-  eyes: z.string().min(2, "Göz rengi zorunludur"),
+  physical: z.string().optional(),
+  personality: z.string().optional(),
+  hair: z.string().optional(),
+  eyes: z.string().optional(),
   photos: z.any().optional(),
 });
 
