@@ -11,12 +11,6 @@ export default function Navbar() {
           </div>
           <span className="text-xl font-bold tracking-tight">MangaGen</span>
         </Link>
-        <Link 
-          to="/order" 
-          className="bg-slate-900 text-white px-6 py-2.5 rounded-full font-medium hover:bg-slate-800 transition-all hover:scale-105 active:scale-95"
-        >
-          Mangaya Başla
-        </Link>
       </div>
     </nav>
   );
