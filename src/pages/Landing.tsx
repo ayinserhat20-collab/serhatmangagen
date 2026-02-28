@@ -23,15 +23,9 @@ export default function Landing() {
               Profesyonel çizerlerimizle anılarını bir sanat eserine çeviriyoruz.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Link
-                to="/order"
-                className="bg-slate-900 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-slate-800 transition-all hover:scale-105"
-              >
-                Hemen Başla
-              </Link>
               <a
                 href="#how-it-works"
-                className="bg-white border border-slate-200 text-slate-900 px-8 py-4 rounded-full font-semibold text-lg hover:bg-slate-50 transition-all"
+                className="bg-slate-900 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-slate-800 transition-all hover:scale-105"
               >
                 Nasıl Çalışır?
               </a>
@@ -51,11 +45,7 @@ export default function Landing() {
                 className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
                 referrerPolicy="no-referrer"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-              <div className="absolute bottom-8 left-8 text-white">
-                <p className="text-sm font-medium opacity-80 uppercase tracking-widest mb-2">Örnek Çalışma</p>
-                <h3 className="text-2xl font-bold italic">"Lise Yılları" Serisi</h3>
-              </div>
+              <div className="absolute inset-0 bg-black/10 transition-colors duration-700 group-hover:bg-transparent" />
             </div>
             {/* Decorative elements */}
             <div className="absolute -top-6 -right-6 w-24 h-24 bg-slate-200 rounded-full blur-3xl opacity-50" />
@@ -114,26 +104,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-24 px-6">
-        <div className="max-w-5xl mx-auto bg-slate-900 rounded-[3rem] p-12 md:p-20 text-center text-white relative overflow-hidden">
-          <div className="relative z-10">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">Hikayen Başlamayı Bekliyor</h2>
-            <p className="text-slate-400 text-lg mb-10 max-w-xl mx-auto">
-              Hemen sipariş ver, profesyonel manga dünyasına ilk adımını at.
-            </p>
-            <Link
-              to="/order"
-              className="bg-white text-slate-900 px-10 py-4 rounded-full font-bold text-xl hover:bg-slate-100 transition-all inline-block"
-            >
-              Şimdi Sipariş Ver
-            </Link>
-          </div>
-          {/* Background glow */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-slate-800 rounded-full blur-[100px] -mr-32 -mt-32" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-slate-800 rounded-full blur-[100px] -ml-32 -mb-32" />
-        </div>
-      </section>
     </div>
   );
 }

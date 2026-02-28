@@ -5,6 +5,7 @@ export default function PricingSection() {
     const packages = [
         {
             title: "Standart Paket",
+            id: "standard",
             badge: "En Uygun",
             isPopular: false,
             features: [
@@ -19,6 +20,7 @@ export default function PricingSection() {
         },
         {
             title: "Premium Paket",
+            id: "premium",
             badge: "⭐ En Popüler",
             isPopular: true,
             features: [
@@ -35,6 +37,7 @@ export default function PricingSection() {
         },
         {
             title: "Çocuklar İçin Hikaye Kitabı",
+            id: "children",
             badge: "Yeni",
             isPopular: false,
             features: [
@@ -87,9 +90,18 @@ export default function PricingSection() {
                                     </span>
                                 )}
 
-                                <h3 className={`text-2xl font-bold mb-8 ${pkg.isPopular ? "mt-4" : ""}`}>
+                                <h3 className={`text-2xl font-bold mb-2 ${pkg.isPopular ? "mt-4" : ""}`}>
                                     {pkg.title}
                                 </h3>
+
+                                <div className="mb-8 flex flex-col items-start gap-1">
+                                    <span className="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded-md inline-block">
+                                        Kargo Dahil
+                                    </span>
+                                    <span className="text-sm text-slate-500 font-medium">
+                                        Fiyata kargo dahildir.
+                                    </span>
+                                </div>
 
                                 <ul className="space-y-5 mb-10">
                                     {pkg.features.map((feature, idx) => (
@@ -102,7 +114,7 @@ export default function PricingSection() {
                             </div>
 
                             <Link
-                                to="/order"
+                                to={`/order?package=${pkg.id}`}
                                 className={`
                   w-full block text-center py-4 px-6 rounded-2xl font-bold text-lg transition-all
                   ${pkg.isPopular

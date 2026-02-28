@@ -9,6 +9,10 @@ export const customerSchema = z.object({
 
 export const storySchema = z.object({
   longText: z.string().min(50, "Hikaye metni en az 50 karakter olmalıdır"),
+  preface: z.string().optional(),
+  musicPreference: z.string().optional(),
+  customMusicPreference: z.string().optional(),
+  specialBox: z.boolean().optional(),
   highlights: z.array(z.string()).min(1, "En az bir önemli olay ekleyiniz"),
   periods: z.array(z.string()).min(1, "En az bir zaman dilimi seçiniz"),
   locations: z.array(z.string()).min(1, "En az bir mekan ekleyiniz"),
@@ -28,6 +32,7 @@ export const characterSchema = z.object({
 });
 
 export const orderSchema = z.object({
+  packageType: z.enum(['standard', 'premium', 'children']),
   customer: customerSchema,
   story: storySchema,
   characters: z.array(characterSchema).min(1, "En az bir karakter eklemelisiniz"),

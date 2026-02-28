@@ -10,6 +10,10 @@ export interface CustomerInfo {
 
 export interface StoryInfo {
   longText: string;
+  preface?: string;
+  musicPreference?: string;
+  customMusicPreference?: string;
+  specialBox?: boolean;
   highlights: string[];
   periods: string[];
   locations: string[];
@@ -31,6 +35,7 @@ export interface CharacterInfo {
 
 export interface Order {
   id: string;
+  packageType: 'standard' | 'premium' | 'children';
   createdAt: string;
   customer: CustomerInfo;
   story: StoryInfo;

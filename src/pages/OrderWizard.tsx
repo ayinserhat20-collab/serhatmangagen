@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { orderSchema } from "../lib/validation";
 import { Plus, Trash2, ArrowRight, ArrowLeft, Upload, Check } from "lucide-react";
@@ -14,11 +14,15 @@ export default function OrderWizard() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [searchParams] = useSearchParams();
+  const packageType = (searchParams.get("package") as 'standard' | 'premium' | 'children') || 'standard';
+
   const { register, control, handleSubmit, watch, trigger, formState: { errors } } = useForm({
     resolver: zodResolver(orderSchema),
     defaultValues: {
+      packageType,
       customer: { fullName: "", phone: "", email: "", address: "" },
-      story: { longText: "", highlights: [""], periods: [], locations: [""], isFiction: false, themes: [] },
+      story: { longText: "", preface: "", musicPreference: "", customMusicPreference: "", specialBox: false, highlights: [""], periods: [], locations: [""], isFiction: false, themes: [] },
       characters: [{ name: "", gender: "", age: "", physical: "", personality: "", hair: "", eyes: "", photos: [] }]
     }
   });
@@ -139,15 +143,59 @@ export default function OrderWizard() {
               exit={{ opacity: 0, y: -10 }}
               className="space-y-8"
             >
-              <h2 className="text-2xl font-bold mb-8">Hikaye Bilgileri</h2>
+              <h2 className="text-2xl font-bold mb-8">Hikayeni Yaz</h2>
 
               <div>
                 <label className="block text-sm font-semibold mb-2">Hikaye Metni (Detaylı)</label>
-                <textarea {...register("story.longText")} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 ring-slate-900/5 outline-none h-48" placeholder="Hikayenizi buraya yazın..." />
+                <textarea {...register("story.longText")} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 ring-slate-900/5 outline-none h-48" placeholder="Hayat hikayeni, anılarını veya mangaya dönüştürmek istediğin olayları yaz..." />
                 {errors.story?.longText && <p className="text-red-500 text-xs mt-1">{errors.story.longText.message}</p>}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="pt-6 border-t border-slate-100">
+                <h3 className="text-xl font-bold mb-4">Önsöz</h3>
+                <label className="block text-sm font-semibold mb-2">Kişisel Mesajın (İsteğe Bağlı)</label>
+                <textarea {...register("story.preface")} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 ring-slate-900/5 outline-none h-24" placeholder="Kitabın başında yer almasını istediğin mesajı yaz (isteğe bağlı)" />
+              </div>
+
+              {packageType === 'premium' && (
+                <div className="space-y-8 pt-6 border-t border-slate-100">
+                  <div>
+                    <h3 className="text-xl font-bold mb-4">Müzik Tercihi</h3>
+                    <label className="block text-sm font-semibold mb-4">Şarkı Türü Tercihi</label>
+                    <div className="flex flex-wrap gap-4 mb-4">
+                      {["Romantik", "Dram", "Mutlu / Enerjik", "Hüzünlü", "Kişisel seçim"].map(genre => (
+                        <label key={genre} className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors has-[:checked]:border-slate-900 has-[:checked]:bg-slate-900/5">
+                          <input type="radio" value={genre} {...register("story.musicPreference")} className="hidden" />
+                          <span className="text-sm font-bold">{genre}</span>
+                        </label>
+                      ))}
+                    </div>
+                    {watch("story.musicPreference") === "Kişisel seçim" && (
+                      <input {...register("story.customMusicPreference")} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 ring-slate-900/5 outline-none" placeholder="Lütfen istediğiniz şarkı türünü veya ismini yazın..." />
+                    )}
+                  </div>
+
+                  <div className="p-6 bg-slate-50 border border-slate-200 rounded-2xl">
+                    <h4 className="font-bold text-slate-900 mb-2">QR Kart İçeriği</h4>
+                    <ul className="text-sm text-slate-600 space-y-1">
+                      <li>• <strong>Ön Yüz QR:</strong> Manga video editine yönlendirir.</li>
+                      <li>• <strong>Arka Yüz QR:</strong> Seçtiğiniz türde hazırlanan kişiye özel şarkıya yönlendirir.</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <label className="flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors has-[:checked]:border-slate-900 has-[:checked]:bg-slate-900/5">
+                      <input type="checkbox" {...register("story.specialBox")} className="w-5 h-5 accent-slate-900" />
+                      <span className="font-bold">Özel Kutulu Gönderim</span>
+                    </label>
+                    {watch("story.specialBox") && (
+                      <p className="text-sm text-slate-500 mt-2 ml-2">Premium paket özel tasarımlı kutu ile gönderilir.</p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div className="pt-6 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
                   <label className="block text-sm font-semibold mb-4">Temalar</label>
                   <div className="flex flex-wrap gap-2">

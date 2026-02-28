@@ -43,8 +43,16 @@ async function startServer() {
           storyText = storyText.substring(0, 1500) + "...";
         }
 
+        let storyInfo = `📝 Hikaye: ${storyText}`;
+        if (order.story.preface) storyInfo += `\n💬 Önsöz: ${order.story.preface}`;
+        if (order.story.musicPreference) storyInfo += `\n🎵 Müzik: ${order.story.musicPreference === 'Kişisel seçim' ? order.story.customMusicPreference : order.story.musicPreference}`;
+        if (order.story.specialBox) storyInfo += `\n🎁 Özel Kutulu Gönderim İsteniyor`;
+
+        const packageLabel = order.packageType === 'premium' ? '⭐ Premium' : order.packageType === 'children' ? '👶 Çocuk Kitabı' : '📘 Standart';
+
         const message = `
 🚀 *Yeni Sipariş Alındı!*
+📦 Paket: ${packageLabel}
 🆔 ID: \`${order.id}\`
 👤 Müşteri: ${order.customer.fullName}
 📧 E-posta: ${order.customer.email}
@@ -54,7 +62,7 @@ async function startServer() {
 💰 Ödeme Durumu: ${order.paymentStatus}
 💳 Ödeme Linki: ${shopierUrl}
 
-📝 Hikaye: ${storyText}
+${storyInfo}
 📸 Fotoğraflar: ${uploadedFiles && uploadedFiles.length > 0 ? uploadedFiles.length + " dosya" : "(yok)"}
         `;
 

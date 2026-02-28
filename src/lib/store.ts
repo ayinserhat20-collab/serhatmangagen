@@ -13,6 +13,7 @@ export const connectDB = async (uri: string) => {
 
 const OrderSchema = new Schema({
   id: { type: String, required: true, unique: true },
+  packageType: { type: String, enum: ['standard', 'premium', 'children'], required: true, default: 'standard' },
   createdAt: { type: String, required: true },
   customer: {
     fullName: String,
@@ -22,6 +23,10 @@ const OrderSchema = new Schema({
   },
   story: {
     longText: String,
+    preface: String,
+    musicPreference: String,
+    customMusicPreference: String,
+    specialBox: Boolean,
     highlights: [String],
     periods: [String],
     locations: [String],
