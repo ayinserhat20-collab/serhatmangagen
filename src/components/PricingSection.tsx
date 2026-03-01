@@ -29,7 +29,7 @@ export default function PricingSection() {
                 "Parlak (laminasyonlu) kapak",
                 "Mini karakter kartı",
                 "Kişiye özel poster",
-                "Çift Taraflı QR Kart:\n• Ön yüz: Mangadan oluşturulmuş sinematik video editine yönlendirir\n• Arka yüz: Size özel seçilmiş kişisel şarkıya yönlendirir",
+                "Çift Taraflı QR Kart:\n• Ön yüz: Mangadan oluşturulmuş sinematik video editine yönlendirir\n• Arka yüz: Size özel hazırladığımız şarkıya yönlendirir",
                 "Daha detaylı çizim ve hikâye işleme"
             ],
             buttonText: "Premium Paketi Seç"

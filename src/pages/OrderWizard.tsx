@@ -198,7 +198,7 @@ export default function OrderWizard() {
                     <h4 className="font-bold text-slate-900 mb-2">QR Kart İçeriği</h4>
                     <ul className="text-sm text-slate-600 space-y-1">
                       <li>• <strong>Ön Yüz QR:</strong> Mangadan oluşturulmuş sinematik video editine yönlendirir.</li>
-                      <li>• <strong>Arka Yüz QR:</strong> Size özel seçilmiş kişisel şarkıya yönlendirir.</li>
+                      <li>• <strong>Arka Yüz QR:</strong> Size özel hazırladığımız şarkıya yönlendirir.</li>
                     </ul>
                   </div>
 
