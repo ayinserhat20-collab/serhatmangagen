@@ -82,24 +82,34 @@ export default function Landing() {
       <PricingSection />
 
       {/* FAQ Section */}
-      <section className="py-24 px-6 max-w-4xl mx-auto">
-        <h2 className="text-3xl font-bold mb-12 text-center">Sıkça Sorulan Sorular</h2>
-        <div className="space-y-6">
+      <section className="py-24 px-6 max-w-3xl mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">Sık Sorulan Sorular</h2>
+          <p className="text-slate-500 text-lg">Aklınıza takılan soruların cevaplarını burada bulabilirsiniz.</p>
+        </div>
+
+        <div className="space-y-4">
           {[
-            { q: "Kitabım kaç sayfa olacak?", a: "Seçtiğiniz pakete göre 20 ile 64 sayfa arasında değişmektedir. Detaylar için Size Özel Paketler bölümünü inceleyebilirsiniz." },
-            { q: "Kendi fotoğraflarımı yükleyebilir miyim?", a: "Evet, karakter tasarımları için referans fotoğraflarınızı yüklemeniz gerekmektedir." },
-            { q: "Teslimat süresi ne kadar?", a: "Çizim ve baskı süreci ortalama 3–5 iş günü sürmektedir." },
-            { q: "Hikayem gizli kalacak mı?", a: "Tüm hikayeleriniz ve fotoğraflarınız gizlilik politikamız gereği korunmaktadır." },
-            { q: "Hangi ödeme yöntemleri geçerli?", a: "Shopier üzerinden tüm kredi ve banka kartları ile güvenle ödeme yapabilirsiniz." },
-            { q: "İade yapabilir miyim?", a: "Bu ürün kişiye özel üretildiği için iade edilemez." }
+            { q: "Bu kitaplar tamamen kişiye özel mi hazırlanıyor?", a: "Evet. Tüm kitaplar müşterinin verdiği hikaye, bilgiler ve tercihlere göre tamamen kişiye özel hazırlanır." },
+            { q: "Kitapta kendi hikayem kullanılabilir mi?", a: "Evet. Kendi hikayenizi anlatabilirsiniz veya hikayenin ana fikrini paylaşabilirsiniz. Hikaye buna göre manga veya masal formatına dönüştürülür." },
+            { q: "Fotoğraf göndermem gerekiyor mu?", a: "İsteğe bağlıdır. Fotoğraf gönderirseniz karakter tasarımları buna göre hazırlanabilir." },
+            { q: "Hangi tür kitaplar hazırlanıyor?", a: "Kişiye özel manga kitapları ve çocuklara özel masal kitapları hazırlanır." },
+            { q: "Ödeme nasıl yapılır?", a: "Sipariş oluşturulduktan sonra güvenli ödeme sayfası üzerinden ödeme yapılabilir." }
           ].map((faq, i) => (
-            <div key={i} className="border-b border-slate-100 pb-6">
-              <h3 className="text-lg font-bold mb-2 flex items-center gap-2">
-                <CheckCircle2 size={18} className="text-slate-400" />
-                {faq.q}
-              </h3>
-              <p className="text-slate-500 pl-7">{faq.a}</p>
-            </div>
+            <details key={i} className="group bg-white border border-slate-200 rounded-2xl overflow-hidden [&_summary::-webkit-details-marker]:hidden border-b-0">
+              <summary className="flex items-center justify-between gap-4 p-6 cursor-pointer font-bold text-slate-900 select-none hover:bg-slate-50 transition-colors">
+                <span className="pr-4">{faq.q}</span>
+                <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-slate-50 text-slate-500 group-open:bg-slate-900 group-open:text-white transition-colors">
+                  <span className="text-xl leading-none font-normal relative -top-[1px] group-open:hidden">+</span>
+                  <span className="text-xl leading-none font-normal relative -top-[1px] hidden group-open:block">−</span>
+                </div>
+              </summary>
+              <div className="px-6 pb-6 pt-0 text-slate-500 leading-relaxed border-t border-slate-100 mt-2 mx-6">
+                <div className="pt-4">
+                  {faq.a}
+                </div>
+              </div>
+            </details>
           ))}
         </div>
       </section>
