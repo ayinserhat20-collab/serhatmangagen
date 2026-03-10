@@ -4,51 +4,51 @@ import { Link } from "react-router-dom";
 export default function PricingSection() {
     const packages = [
         {
-            title: "Standart Paket",
+            title: "Standart Manga Paketi",
             id: "standard",
             badge: "En Uygun",
             isPopular: false,
+            description: "Gerçek hikayenizi manga tarzında anlatan kişiye özel kitap.",
             features: [
-                "24–32 sayfa kişiye özel manga",
-                "Size özel kapak tasarımı",
-                "Siyah-beyaz manga iç sayfalar",
-                "Kişisel önsöz (isteğe bağlı)",
-                "Mini karakter kartı",
-                "A5 kitap baskısı"
+                "Kişiye özel manga hikayesi",
+                "24 – 32 sayfa manga",
+                "A5 kitap formatı",
+                "Özel kapak tasarımı"
             ],
-            buttonText: "Standart Paketi Seç"
+            buttonText: "Sipariş Ver"
         },
         {
-            title: "Premium Paket",
+            title: "Premium Manga Paketi",
             id: "premium",
             badge: "⭐ En Popüler",
             isPopular: true,
+            description: "Hikayenizi koleksiyonluk premium bir manga kitabına dönüştürün.",
             features: [
-                "48–64 sayfa detaylı manga",
-                "Özel tasarlanmış premium kapak",
-                "Parlak (laminasyonlu) kapak",
-                "Mini karakter kartı",
-                "Kişiye özel poster",
-                "Çift Taraflı QR Kart:\n• Ön yüz: Mangadan oluşturulmuş sinematik video editine yönlendirir\n• Arka yüz: Size özel hazırladığımız şarkıya yönlendirir",
-                "Özel kutulu gönderim",
-                "Daha detaylı çizim ve hikâye işleme"
+                "Kişiye özel manga hikayesi",
+                "24 – 32 sayfa manga",
+                "Özel kapak tasarımı",
+                "Kitap için özel yazılmış ön söz",
+                "Hikayeye özel poster",
+                "Seçtiğiniz şarkıya özel QR kod kartı",
+                "Kişiye özel kartvizit"
             ],
-            buttonText: "Premium Paketi Seç"
+            buttonText: "Sipariş Ver"
         },
         {
-            title: "Çocuklar İçin Hikaye Kitabı",
+            title: "Çocuk Masal Kitabı",
             id: "children",
             badge: "Yeni",
             isPopular: false,
+            description: "Çocuğunuz için hazırlanmış eğlenceli ve boyamalı kişiye özel masal kitabı.",
             features: [
-                "Tam renkli görselli hikaye kitabı",
-                "Çocuğunuzun ismine özel karakter",
-                "Eğitici ve eğlenceli hikaye",
-                "Renkli sayfalar",
-                "20–32 sayfa",
+                "Çocuklara özel masal kitabı",
+                "20 – 30 sayfa",
+                "A4 kitap formatı",
+                "Boyama sayfaları içeren hikaye",
+                "Eğlenceli ve öğretici sahneler",
                 "Çocuk dostu çizim tarzı"
             ],
-            buttonText: "Hikaye Kitabını Seç"
+            buttonText: "Sipariş Ver"
         }
     ];
 
@@ -57,7 +57,7 @@ export default function PricingSection() {
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-20">
                     <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 mb-6">
-                        Size Özel Paketler
+                        Paketler
                     </h2>
                     <p className="text-lg text-slate-500 max-w-2xl mx-auto">
                         Hayalinizdeki eseri gerçeğe dönüştürmek için ihtiyacınıza ve bütçenize en uygun paketi seçin.
@@ -93,6 +93,10 @@ export default function PricingSection() {
                                 <h3 className={`text-2xl font-bold mb-2 ${pkg.isPopular ? "mt-4" : ""}`}>
                                     {pkg.title}
                                 </h3>
+
+                                <p className="text-sm text-slate-600 mb-6 leading-relaxed">
+                                    {pkg.description}
+                                </p>
 
                                 <div className="mb-8 flex flex-col items-start gap-1">
                                     <span className="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded-md inline-block">
